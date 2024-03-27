@@ -10,7 +10,8 @@ class FixedPoint {
   }
 
   float GetFloat() {
-    return (float)((double)value_ / (1 << fraction_bits));
+    return (value_ >> fraction_bits) + 
+    (float)(value_ % (1 << fraction_bits)) / (1 << fraction_bits);
   }
 
   int32_t GetInt() const {
@@ -20,7 +21,7 @@ class FixedPoint {
 
   template<uint8_t other_fb>
   void operator+=(const FixedPoint<other_fb>& other) {
-    value_= (int32_t)((int64_t)value_ + ValueConversion(other));
+    value_= (int32_t)(value_ + ValueConversion(other));
   }
 
 
@@ -71,7 +72,7 @@ class FixedPoint {
 
   template<uint8_t other_fb>
   void operator/=(const FixedPoint<other_fb>& other) {
-    value_ = (int32_t)((int64_t)value_ / other.GetInt()) << other_fb;
+    value_ = (int32_t)(((int64_t)value_ << other_fb) / other.GetInt());
   }
 
   template<uint8_t other_fb>
@@ -85,7 +86,7 @@ class FixedPoint {
  private:
   template<uint8_t other_fb>
   constexpr int32_t ValueConversion(const FixedPoint<other_fb>& other) {
-    int64_t result = other.GetInt();
+    int32_t result = other.GetInt();
 
     if constexpr (fraction_bits > other_fb) {
       result <<= (fraction_bits - other_fb);
