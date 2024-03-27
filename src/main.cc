@@ -1,17 +1,24 @@
-#include "header/fixed_point.h"
-
+#include <cmath>
 #include <iostream>
 
+#include "header/fixed_point.h"
+
 int main() {
-    int a = 12;
-    int b = 123;
-    FixedPoint A(128, 15);
-    FixedPoint B(4, 8);
-    A / B;
+  FixedPoint a(1.23f);
+  FixedPoint<12> b(4.567f);
 
-    std:: cout << A.value_ << std::endl;
+  FixedPoint c = a + b;
+  std::cout << c.GetFloat() << std::endl;
 
-    std:: cout << A.exp_ << '\n';
+  c = a - b;
+  std::cout << c.GetFloat() << std::endl;
 
-    return 0;
+  c = a * b;
+  std::cout << c.GetFloat() << std::endl;
+
+  c = a / b;
+  std::cout << c.GetFloat() << std::endl;
+
+
+  return 0;
 }
