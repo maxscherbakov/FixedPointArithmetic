@@ -5,7 +5,7 @@
 
 int main() {
   FixedPoint a(1.23f);
-  FixedPoint<12> b(4.567f);
+  FixedPoint<12, int16_t> b(4.567f);
 
   FixedPoint c = a + b;
   std::cout << c.GetFloat() << std::endl;

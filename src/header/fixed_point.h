@@ -2,11 +2,11 @@
 #define FIXEDPOINTARITHMETIC_HEADER_FIXED_POINT_H_
 
 
-template<uint8_t fraction_bits=16>
+template<uint8_t fraction_bits=16, typename TypeValue=int32_t>
 class FixedPoint {
  public:
   FixedPoint(float value) {
-    value_ = (int32_t)(std::round((double)value * (1 << fraction_bits)));
+    value_ = (TypeValue)(std::round((double)value * (1 << fraction_bits)));
   }
 
   float GetFloat() {
@@ -14,79 +14,79 @@ class FixedPoint {
     (float)(value_ % (1 << fraction_bits)) / (1 << fraction_bits);
   }
 
-  int32_t GetInt() const {
+  TypeValue GetInt() const {
     return value_;
   }
 
 
-  template<uint8_t other_fb>
-  void operator+=(const FixedPoint<other_fb>& other) {
-    value_= (int32_t)(value_ + ValueConversion(other));
+  template<uint8_t other_fb, typename otherType>
+  void operator+=(const FixedPoint<other_fb, otherType>& other) {
+    value_= (TypeValue)(value_ + ValueConversion(other));
   }
 
 
-  template<uint8_t other_fb>
-  FixedPoint operator+(const FixedPoint<other_fb>& other) {
-    FixedPoint<fraction_bits> result = *this;
+  template<uint8_t other_fb, typename otherType>
+  FixedPoint operator+(const FixedPoint<other_fb, otherType>& other) {
+    FixedPoint<fraction_bits, TypeValue> result = *this;
     result += other;
 
     return result;
   }
 
 
-  template<uint8_t other_fb>
-  void operator-=(const FixedPoint<other_fb>& other) {
-    value_= (int32_t)((int64_t)value_ - ValueConversion(other));
+  template<uint8_t other_fb, typename otherType>
+  void operator-=(const FixedPoint<other_fb, otherType>& other) {
+    value_= (TypeValue)((int64_t)value_ - ValueConversion(other));
   }
   
   FixedPoint operator-() {
-    FixedPoint<fraction_bits> result = *this;
+    FixedPoint<fraction_bits, TypeValue> result = *this;
     result.value_ = -result.value_;
     
     return result;
   }
 
-  template<uint8_t other_fb>
-  FixedPoint operator-(const FixedPoint<other_fb>& other) {
-    FixedPoint<fraction_bits> result = *this;
+  template<uint8_t other_fb, typename otherType>
+  FixedPoint operator-(const FixedPoint<other_fb, otherType>& other) {
+    FixedPoint<fraction_bits, TypeValue> result = *this;
     result -= other;
 
     return result;
   }
 
-  template<uint8_t other_fb>
-  void operator*=(const FixedPoint<other_fb>& other) {
-    value_ = (int32_t)((int64_t)value_ * other.GetInt() >> other_fb);
+  template<uint8_t other_fb, typename otherType>
+  void operator*=(const FixedPoint<other_fb, otherType>& other) {
+    value_ = (TypeValue)((int64_t)value_ * other.GetInt() >> other_fb);
   }
 
 
-  template<uint8_t other_fb>
-  FixedPoint operator*(const FixedPoint<other_fb>& other) {
+  template<uint8_t other_fb, typename otherType>
+  FixedPoint operator*(const FixedPoint<other_fb, otherType>& other) {
 	
-    FixedPoint<fraction_bits> result = *this;
+    FixedPoint<fraction_bits, TypeValue> result = *this;
     result *= other;
 	
 
     return result;
   }
 
-  template<uint8_t other_fb>
-  void operator/=(const FixedPoint<other_fb>& other) {
-    value_ = (int32_t)(((int64_t)value_ << other_fb) / other.GetInt());
+  template<uint8_t other_fb, typename otherType>
+  void operator/=(const FixedPoint<other_fb, otherType>& other) {
+    value_ = (TypeValue)(((int64_t)value_ << other_fb) / other.GetInt());
   }
 
-  template<uint8_t other_fb>
-  FixedPoint operator/(const FixedPoint<other_fb>& other) {
-    FixedPoint<fraction_bits> result = *this;
+  template<uint8_t other_fb, typename otherType>
+  FixedPoint operator/(const FixedPoint<other_fb, otherType>& other) {
+    FixedPoint<fraction_bits, TypeValue> result = *this;
     result /= other;
 
     return result;
   }
 
  private:
-  template<uint8_t other_fb>
-  constexpr int32_t ValueConversion(const FixedPoint<other_fb>& other) {
-    int32_t result = other.GetInt();
+  template<uint8_t other_fb, typename otherType>
+  constexpr TypeValue ValueConversion(const FixedPoint<other_fb, otherType>& other) {
+    TypeValue result = (TypeValue)other.GetInt();
 
     if constexpr (fraction_bits > other_fb) {
       result <<= (fraction_bits - other_fb);
@@ -97,7 +97,7 @@ class FixedPoint {
     return result;
   }
 
-  int32_t value_;
+  TypeValue value_;
 };
 
 #endif  // FIXEDPOINTARITHMETIC_HEADER_FIXED_POINT_H_
